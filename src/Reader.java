@@ -8,13 +8,10 @@ import java.util.Scanner;
 
 public class Reader {
 
-	String fileName;
-
-	public Reader(String name) {
-		fileName = name;
+	public Reader() {
 	}
 
-	public Image readImage() {
+	public Image readImage(String fileName) {
 
 		int featuresNumber = 0;
 		int pointsNumber = 0;
@@ -30,6 +27,8 @@ public class Reader {
 			for (int i = 0; i < pointsNumber; i++) {
 				points.add(processLine(in.readLine()));
 			}
+			
+			in.close();
 
 		} catch (FileNotFoundException e) {
 			System.out.println("B³¹d odczytu");
@@ -38,29 +37,27 @@ public class Reader {
 			System.out.println("B³¹d linii");
 			e.printStackTrace();
 		}
+		
+	
 
 		return new Image(points, pointsNumber, featuresNumber);
-	}
-
-	public static void main(String[] args) {
-		Reader r = new Reader("nyan.png.haraff.sift");
-		r.readImage();
 	}
 
 	private Point processLine(String line) {
 
 		List<Integer> list = new ArrayList<Integer>();
 		Scanner scanner = new Scanner(line);
-		double x = scanner.nextDouble();
-		double y = scanner.nextDouble();
+		double x = Double.parseDouble(scanner.next());
+		double y = Double.parseDouble(scanner.next());
 
 		for (int i = 0; i < 3; i++) {
-			scanner.nextDouble();
+			scanner.next();
 		}
 
-		while (scanner.hasNextInt())
-			list.add(scanner.nextInt());
+		while (scanner.hasNextInt()) list.add(scanner.nextInt());	
+		scanner.close();
 		Integer[] features = list.toArray(new Integer[list.size()]);
+		
 		return new Point(x, y, features);
 	}
 }
