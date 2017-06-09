@@ -11,14 +11,14 @@ public class Reader {
 	public Reader() {
 	}
 
-	public Image readImage(String fileName) {
+	public Image readImageHaraff(String fileName) {
 
 		int featuresNumber = 0;
 		int pointsNumber = 0;
 		List<Point> points = null;
 
 		try {
-			BufferedReader in = new BufferedReader(new FileReader(fileName));
+			BufferedReader in = new BufferedReader(new FileReader("haraffs/"+fileName+".haraff.sift"));
 
 			featuresNumber = Integer.parseInt(in.readLine());
 			pointsNumber = Integer.parseInt(in.readLine());
@@ -27,7 +27,6 @@ public class Reader {
 			for (int i = 0; i < pointsNumber; i++) {
 				points.add(processLine(in.readLine()));
 			}
-			
 			in.close();
 
 		} catch (FileNotFoundException e) {
@@ -38,9 +37,7 @@ public class Reader {
 			e.printStackTrace();
 		}
 		
-	
-
-		return new Image(points, pointsNumber, featuresNumber);
+		return new Image(points, pointsNumber, featuresNumber, fileName);
 	}
 
 	private Point processLine(String line) {
