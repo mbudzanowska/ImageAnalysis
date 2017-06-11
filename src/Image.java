@@ -17,9 +17,9 @@ public class Image {
 		this.points = points;
 		this.pointsNumber = pointsNumber;
 		this.featuresNumber = featuresNumber;
-		
+
 		try {
-			setImage(ImageIO.read(new File("images/"+imageName)));
+			setImage(ImageIO.read(new File("images/" + imageName)));
 		} catch (IOException e) {
 			System.out.println("b³¹d odczytu obazu");
 			e.printStackTrace();

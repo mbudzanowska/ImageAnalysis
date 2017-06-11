@@ -18,7 +18,7 @@ public class Reader {
 		List<Point> points = null;
 
 		try {
-			BufferedReader in = new BufferedReader(new FileReader("haraffs/"+fileName+".haraff.sift"));
+			BufferedReader in = new BufferedReader(new FileReader("haraffs/" + fileName + ".haraff.sift"));
 
 			featuresNumber = Integer.parseInt(in.readLine());
 			pointsNumber = Integer.parseInt(in.readLine());
@@ -36,7 +36,7 @@ public class Reader {
 			System.out.println("B³¹d linii");
 			e.printStackTrace();
 		}
-		
+
 		return new Image(points, pointsNumber, featuresNumber, fileName);
 	}
 
@@ -51,10 +51,11 @@ public class Reader {
 			scanner.next();
 		}
 
-		while (scanner.hasNextInt()) list.add(scanner.nextInt());	
+		while (scanner.hasNextInt())
+			list.add(scanner.nextInt());
 		scanner.close();
 		Integer[] features = list.toArray(new Integer[list.size()]);
-		
+
 		return new Point(x, y, features);
 	}
 }
