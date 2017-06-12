@@ -5,7 +5,8 @@ import Jama.*;
 
 public class RANSAC extends AlgorithmsBasics {
 
-	//private static final Transformation transformation_type = Transformation.AFFINE;
+	// private static final Transformation transformation_type =
+	// Transformation.AFFINE;
 	private static final Transformation transformation_type = Transformation.PERSPECTIVE;
 	private static final int ITERATIONS_NUMBER = 1000;
 	private static final double MAX_ERROR = 20;
@@ -59,13 +60,15 @@ public class RANSAC extends AlgorithmsBasics {
 
 			switch (transformation_type) {
 			case AFFINE: {
-				//randomly_chosen_points = choosePointsSemiRandomly(key_points, 3);
+				// randomly_chosen_points = choosePointsSemiRandomly(key_points,
+				// 3);
 				randomly_chosen_points = choosePointsRandomly(key_points, 3);
 				model = calculateAffineModel(randomly_chosen_points);
 				break;
 			}
 			case PERSPECTIVE: {
-				//randomly_chosen_points = choosePointsSemiRandomly(key_points, 4); 
+				// randomly_chosen_points = choosePointsSemiRandomly(key_points,
+				// 4);
 				randomly_chosen_points = choosePointsRandomly(key_points, 4);
 				model = calculatePerspectiveModel(randomly_chosen_points);
 				break;
@@ -79,7 +82,7 @@ public class RANSAC extends AlgorithmsBasics {
 			}
 
 			if (score > best_score) {
-				//System.out.println("NEW MODDE");
+				// System.out.println("NEW MODDE");
 				best_score = score;
 				best_model = model;
 			}
@@ -200,17 +203,19 @@ public class RANSAC extends AlgorithmsBasics {
 		setPointBorderers(first_point, image_1st);
 
 		List<Point> borderers = first_point.getBorderers();
-		//System.out.println(borderers.size());
+		// System.out.println(borderers.size());
 
 		for (int i = 1; i < number; i++) {
 			do {
 				randomly_chosen_points[i] = findKeyPoints(borderers.get(random.nextInt(borderers.size())), key_points);
-				if(randomly_chosen_points[i] != null){
-					double distance = getDistance(randomly_chosen_points[i].getFirstPoint(), randomly_chosen_points[0].getFirstPoint());
-					distance = Math.pow(distance,2);
-					if(distance < Math.pow(r, 2) || distance > Math.pow(R, 2)) randomly_chosen_points[i] = null;
-				}		
-			} while (randomly_chosen_points[i] == null);	
+				if (randomly_chosen_points[i] != null) {
+					double distance = getDistance(randomly_chosen_points[i].getFirstPoint(),
+							randomly_chosen_points[0].getFirstPoint());
+					distance = Math.pow(distance, 2);
+					if (distance < Math.pow(r, 2) || distance > Math.pow(R, 2))
+						randomly_chosen_points[i] = null;
+				}
+			} while (randomly_chosen_points[i] == null);
 		}
 		return randomly_chosen_points;
 	}

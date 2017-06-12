@@ -10,7 +10,6 @@ public class AlgorithmsBasics {
 	protected static int NEIGBOUR_SIZE;
 	protected static int ACCEPTED_THRESHOLD;
 
-
 	public AlgorithmsBasics(Image image_1st, Image image_2nd) {
 		AlgorithmsBasics.image_1st = image_1st;
 		AlgorithmsBasics.image_2nd = image_2nd;
@@ -69,9 +68,9 @@ public class AlgorithmsBasics {
 			borderers.add(new NeighbourPoints(point, image_point, getDistance(point, image_point)));
 		}
 		Collections.sort(borderers, new NeighboursComparator());
-	
+
 		borderers = borderers.subList(1, NEIGBOUR_SIZE + 1);
-	
+
 		for (NeighbourPoints borderer : borderers) {
 			point.addBorderer(borderer.getSecondPoint());
 		}

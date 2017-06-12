@@ -6,10 +6,8 @@ public class NearestNeighbourAlgorithm extends AlgorithmsBasics {
 	// BORDERER - on the same image
 	// NEIGHBOUR - on second image
 
-
 	public NearestNeighbourAlgorithm(Image image_1st, Image image_2nd) {
 		super(image_1st, image_2nd);
-		
 	}
 
 	public List<NeighbourPoints> getCoupleKeyPoints() {
