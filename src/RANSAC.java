@@ -5,15 +5,18 @@ import Jama.*;
 
 public class RANSAC extends AlgorithmsBasics {
 
-	private static final Transformation transformation_type = Transformation.AFFINE;
+	//private static final Transformation transformation_type = Transformation.AFFINE;
+	private static final Transformation transformation_type = Transformation.PERSPECTIVE;
 	private static final int ITERATIONS_NUMBER = 1000;
-	private static final double MAX_ERROR = 3;
+	private static final double MAX_ERROR = 20;
+	private static double r;
+	private static double R;
 
 	public RANSAC(Image image_1st, Image image_2nd) {
-
-		RANSAC.image_1st = image_1st;
-		RANSAC.image_2nd = image_2nd;
-		features_number = image_1st.getFeaturesNumber();
+		super(image_1st, image_2nd);
+		R = 0.3 * Math.max(Math.max(image_1st.getImage().getHeight(null), image_2nd.getImage().getHeight(null)),
+				Math.max(image_1st.getImage().getWidth(null), image_2nd.getImage().getWidth(null)));
+		r = R / 30;
 	}
 
 	public List<NeighbourPoints> getCoupleKeyPoints() {
@@ -34,7 +37,7 @@ public class RANSAC extends AlgorithmsBasics {
 		return consistent_points;
 	}
 
-	public List<NeighbourPoints> getAllPointsWithModel(double[][] model, List<NeighbourPoints> key_points) {
+	private List<NeighbourPoints> getAllPointsWithModel(double[][] model, List<NeighbourPoints> key_points) {
 
 		List<NeighbourPoints> consistent_poinst = new ArrayList<NeighbourPoints>();
 		for (NeighbourPoints pair : key_points) {
@@ -56,23 +59,27 @@ public class RANSAC extends AlgorithmsBasics {
 
 			switch (transformation_type) {
 			case AFFINE: {
-				randomly_chosen_points = chosePointsRandomly(key_points, 3);
+				//randomly_chosen_points = choosePointsSemiRandomly(key_points, 3);
+				randomly_chosen_points = choosePointsRandomly(key_points, 3);
 				model = calculateAffineModel(randomly_chosen_points);
 				break;
 			}
 			case PERSPECTIVE: {
-				randomly_chosen_points = chosePointsRandomly(key_points, 4);
+				//randomly_chosen_points = choosePointsSemiRandomly(key_points, 4); 
+				randomly_chosen_points = choosePointsRandomly(key_points, 4);
 				model = calculatePerspectiveModel(randomly_chosen_points);
 				break;
 			}
 			}
 			for (NeighbourPoints neighbour_point : key_points) {
 				double error = countError(model, neighbour_point);
-				if (error < MAX_ERROR) // what the fuck is max error
+
+				if (error < MAX_ERROR)
 					score++;
 			}
 
 			if (score > best_score) {
+				//System.out.println("NEW MODDE");
 				best_score = score;
 				best_model = model;
 			}
@@ -177,7 +184,7 @@ public class RANSAC extends AlgorithmsBasics {
 		return result;
 	}
 
-	private NeighbourPoints[] chosePointsRandomly(List<NeighbourPoints> key_points, int number) {
+	private NeighbourPoints[] choosePointsRandomly(List<NeighbourPoints> key_points, int number) {
 		NeighbourPoints[] randomly_chosen_points = new NeighbourPoints[number];
 		Random random = new Random();
 		for (int i = 0; i < number; i++)
@@ -185,4 +192,34 @@ public class RANSAC extends AlgorithmsBasics {
 		return randomly_chosen_points;
 	}
 
+	private NeighbourPoints[] choosePointsSemiRandomly(List<NeighbourPoints> key_points, int number) {
+		NeighbourPoints[] randomly_chosen_points = new NeighbourPoints[number];
+		Random random = new Random();
+		randomly_chosen_points[0] = key_points.get(random.nextInt(key_points.size()));
+		Point first_point = randomly_chosen_points[0].getFirstPoint();
+		setPointBorderers(first_point, image_1st);
+
+		List<Point> borderers = first_point.getBorderers();
+		//System.out.println(borderers.size());
+
+		for (int i = 1; i < number; i++) {
+			do {
+				randomly_chosen_points[i] = findKeyPoints(borderers.get(random.nextInt(borderers.size())), key_points);
+				if(randomly_chosen_points[i] != null){
+					double distance = getDistance(randomly_chosen_points[i].getFirstPoint(), randomly_chosen_points[0].getFirstPoint());
+					distance = Math.pow(distance,2);
+					if(distance < Math.pow(r, 2) || distance > Math.pow(R, 2)) randomly_chosen_points[i] = null;
+				}		
+			} while (randomly_chosen_points[i] == null);	
+		}
+		return randomly_chosen_points;
+	}
+
+	private NeighbourPoints findKeyPoints(Point point, List<NeighbourPoints> key_points) {
+		NeighbourPoints neighbour_points = null;
+		for (NeighbourPoints points : key_points)
+			if (points.getFirstPoint() == point)
+				neighbour_points = points;
+		return neighbour_points;
+	}
 }
