@@ -3,11 +3,8 @@ import java.util.List;
 import java.util.Random;
 import Jama.*;
 
-public class RANSAC {
+public class RANSAC extends AlgorithmsBasics {
 
-	private static Image image_1st;
-	private static Image image_2nd;
-	private static int features_number;
 	private static final Transformation transformation_type = Transformation.AFFINE;
 	private static final int ITERATIONS_NUMBER = 1000;
 	private static final double MAX_ERROR = 3;
@@ -31,7 +28,7 @@ public class RANSAC {
 		System.out.println("Number of possible neighbour points: " + key_points.size());
 
 		double[][] model = chooseBestModel(key_points);
-		
+
 		List<NeighbourPoints> consistent_points = getAllPointsWithModel(model, key_points);
 		System.out.println("Number of consistent key points: " + consistent_points.size());
 		return consistent_points;
@@ -46,46 +43,6 @@ public class RANSAC {
 				consistent_poinst.add(new NeighbourPoints(pair.getFirstPoint(), counted_point));
 		}
 		return consistent_poinst;
-	}
-
-	private void setAllClosestPointsOnSecondImage(Image image_1st, Image image_2nd) {
-		for (Point point : image_1st.getPoints())
-			point.setNearest_neighbour(getClosestPointOnImage(point, image_2nd));
-	}
-
-	private Point getClosestPointOnImage(Point point, Image image) {
-		Point closest = null;
-		double distance = Double.POSITIVE_INFINITY;
-
-		for (Point image_point : image.getPoints()) {
-			double computed_distance = getEuclidDistance(point, image_point);
-			if (computed_distance < distance) {
-				distance = computed_distance;
-				closest = image_point;
-			}
-		}
-		return closest;
-	}
-
-	private double getEuclidDistance(Point a, Point b) {
-		Integer[] a_features = a.getFeatures();
-		Integer[] b_features = b.getFeatures();
-		double distance = 0;
-		for (int i = 0; i < features_number; i++)
-			distance += Math.pow(a_features[i] - b_features[i], 2);
-		distance = Math.sqrt(distance);
-		return distance;
-	}
-
-	private List<NeighbourPoints> findAllPossibleCouples() {
-		List<NeighbourPoints> couple_key_points = new ArrayList<NeighbourPoints>();
-		for (Point point_1st : image_1st.getPoints()) {
-			for (Point point_2nd : image_2nd.getPoints()) {
-				if (point_1st.getNearest_neighbour() == point_2nd && point_2nd.getNearest_neighbour() == point_1st)
-					couple_key_points.add(new NeighbourPoints(point_1st, point_2nd));
-			}
-		}
-		return couple_key_points;
 	}
 
 	private double[][] chooseBestModel(List<NeighbourPoints> key_points) {
@@ -140,10 +97,6 @@ public class RANSAC {
 		return new Point(x_val, y_val, null);
 	}
 
-	private double getDistance(Point a, Point b) {
-		return Math.sqrt(Math.pow(a.getX() - b.getX(), 2) + Math.pow(a.getY() - b.getY(), 2));
-	}
-
 	private double[][] calculateAffineModel(NeighbourPoints[] chosen_points) {
 
 		double x1 = chosen_points[0].getFirstPoint().getX();
@@ -169,9 +122,9 @@ public class RANSAC {
 		Matrix m2 = new Matrix(image_2_matrix);
 		Matrix A;
 		try {
-		A = m1.inverse().times(m2);
+			A = m1.inverse().times(m2);
 		} catch (RuntimeException ex) {
-			A = new Matrix (9,1);
+			A = new Matrix(9, 1);
 		}
 
 		double[][] result = { { A.get(0, 0), A.get(1, 0), A.get(2, 0) }, { A.get(3, 0), A.get(4, 0), A.get(5, 0) },
@@ -213,9 +166,9 @@ public class RANSAC {
 
 		Matrix A;
 		try {
-		A = m1.inverse().times(m2);
+			A = m1.inverse().times(m2);
 		} catch (RuntimeException ex) {
-			A = new Matrix (9,1);
+			A = new Matrix(9, 1);
 		}
 
 		double[][] result = { { A.get(0, 0), A.get(1, 0), A.get(2, 0) }, { A.get(3, 0), A.get(4, 0), A.get(5, 0) },
